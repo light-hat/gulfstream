@@ -1,3 +1,3 @@
 # Gulfstream
 
-Scalable video streaming platform with microservice architecture.
+Проект в очень долгом ящике. Скоро доведу до ума =)
