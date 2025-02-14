@@ -1,3 +1,3 @@
 # Gulfstream
 
-Проект в очень долгом ящике. Скоро доведу до ума =)
+The project is on the back burner, but I’ll get it sorted out soon =)
