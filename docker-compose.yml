@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    restart: always
+    expose:
+      - 8500
+    volumes:
+      - ./consul/config.json:/consul/config/config.json
+    command: agent -dev -client=0.0.0.0
+
+  minio:
+    image: minio/minio
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      - MINIO_ROOT_USER=ACCESS_KEY
+      - MINIO_ROOT_PASSWORD=SECRET_KEY
+    volumes:
+      - minio-data:/data
+    command: server /data
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "1935:1935"
+    depends_on:
+      - consul
+
+volumes:
+  minio-data:
