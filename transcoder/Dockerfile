@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY go.mod ./
 RUN go mod download
+RUN go get github.com/notedit/rtmp
 
 COPY . .
 
