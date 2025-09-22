@@ -11,13 +11,13 @@ jobs:
         services: [ 'hls-origin', 'rtmp-ingest', 'transcoder' ]
     steps:
       - uses: actions/checkout@v5
-      - name: Setup Go ${{ matrix.go-version }}
+      - name: Setup Go ${{ matrix.go-version }} (${{ matrix.services }} service)
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Display Go version
+      - name: Display Go version (${{ matrix.services }} service)
         run: go version
-      - name: Setup requirements
+      - name: Setup requirements (${{ matrix.services }} service)
         run: cd ${{ matrix.services }} && go mod download
-      - name: Try to build service 
+      - name: Try to build service (${{ matrix.services }} service)
         run: cd ${{ matrix.services }} && go build -o /test
