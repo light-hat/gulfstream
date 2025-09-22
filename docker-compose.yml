@@ -28,8 +28,10 @@ services:
       - CASSANDRA_RPC_ADDRESS=0.0.0.0
       - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
       - CASSANDRA_CLUSTER_NAME=my-cluster
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
       - CASSANDRA_DC=my-datacenter-1
+      - MAX_HEAP_SIZE=2G
+      - HEAP_NEWSIZE=1G
     volumes:
       - cassandra-node-1:/var/lib/cassandra:rw
     restart:
@@ -51,9 +53,11 @@ services:
       - CASSANDRA_RPC_ADDRESS=0.0.0.0
       - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
       - CASSANDRA_CLUSTER_NAME=my-cluster
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
       - CASSANDRA_DC=my-datacenter-1
       - CASSANDRA_SEEDS=cassandra-1
+      - MAX_HEAP_SIZE=2G
+      - HEAP_NEWSIZE=1G
     depends_on:
       cassandra-1:
         condition: service_healthy
@@ -78,9 +82,11 @@ services:
       - CASSANDRA_RPC_ADDRESS=0.0.0.0
       - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
       - CASSANDRA_CLUSTER_NAME=my-cluster
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
       - CASSANDRA_DC=my-datacenter-1
       - CASSANDRA_SEEDS=cassandra-1
+      - MAX_HEAP_SIZE=2G
+      - HEAP_NEWSIZE=1G
     depends_on:
       cassandra-2:
         condition: service_healthy
