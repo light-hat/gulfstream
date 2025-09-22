@@ -128,6 +128,40 @@ services:
   #   depends_on:
   #     - consul
 
+  transcoder:
+    build: ./transcoder
+    volumes:
+      - ./transcoder/tmp:/tmp
+    environment:
+      MINIO_ENDPOINT: "minio:9000"
+    depends_on:
+      - minio
+
+  rtmp-ingest:
+    build: ./rtmp-ingest
+    ports:
+      - "1935:1935"
+    environment:
+      TRANSCODER_URL: "rtmp://transcoder/live"
+    depends_on:
+      - transcoder
+
+  hls-origin:
+    build: ./hls-origin
+    ports:
+      - "8080:8080"
+    environment:
+      MINIO_ENDPOINT: "minio:9000"
+    depends_on:
+      - minio
+    
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - hls-origin
+
 networks:
   cassandra-internal:
     driver: bridge
