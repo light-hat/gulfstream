@@ -1,15 +1,15 @@
 version: '3.8'
 
 services:
-  # consul:
-  #   image: consul:1.15.4
-  #   container_name: consul
-  #   restart: always
-  #   expose:
-  #     - 8500
-  #   volumes:
-  #     - ./consul/config.json:/consul/config/config.json
-  #   command: agent -dev -client=0.0.0.0
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    restart: always
+    expose:
+      - 8500
+    volumes:
+      - ./consul/config.json:/consul/config/config.json
+    command: agent -dev -client=0.0.0.0
 
   cassandra-1:
     image: "cassandra:latest"
