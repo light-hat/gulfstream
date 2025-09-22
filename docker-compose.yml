@@ -5,8 +5,10 @@ services:
     image: consul:1.15.4
     container_name: consul
     restart: always
+    networks:
+      app-network:
     expose:
-      - 8500
+      - "8500"
     volumes:
       - ./consul/config.json:/consul/config/config.json
     command: agent -dev -client=0.0.0.0
@@ -14,9 +16,13 @@ services:
   cassandra-1:
     image: "cassandra:latest"
     container_name: "cassandra-1"
-    ports:
-      - 7000:7000
-      - 9042:9042
+    networks:
+      cassandra-internal:
+        aliases:
+          - cassandra-seed
+      app-network:
+    expose:
+      - "9042"
     environment:
       - CASSANDRA_START_RPC=true
       - CASSANDRA_RPC_ADDRESS=0.0.0.0
@@ -38,8 +44,8 @@ services:
   cassandra-2:
     image: "cassandra:latest"
     container_name: "cassandra-2"
-    ports:
-      - 9043:9042
+    networks:
+      - cassandra-internal
     environment:
       - CASSANDRA_START_RPC=true
       - CASSANDRA_RPC_ADDRESS=0.0.0.0
@@ -65,8 +71,8 @@ services:
   cassandra-3:
     image: "cassandra:latest"
     container_name: "cassandra-3"
-    ports:
-      - 9044:9042
+    networks:
+      - cassandra-internal
     environment:
       - CASSANDRA_START_RPC=true
       - CASSANDRA_RPC_ADDRESS=0.0.0.0
@@ -92,8 +98,11 @@ services:
   minio:
     image: minio/minio
     restart: always
+    networks:
+      app-network:
     ports:
       - "9000:9000"
+      - "9001:9001"
     environment:
       - MINIO_ROOT_USER=ACCESS_KEY
       - MINIO_ROOT_PASSWORD=SECRET_KEY
@@ -105,11 +114,20 @@ services:
     build: ./nginx
     container_name: nginx
     restart: always
+    networks:
+      app-network:
     ports:
       - "80:80"
       - "1935:1935"
     depends_on:
       - consul
+
+networks:
+  cassandra-internal:
+    driver: bridge
+    internal: true
+  app-network:
+    driver: bridge
 
 volumes:
   cassandra-node-1:
