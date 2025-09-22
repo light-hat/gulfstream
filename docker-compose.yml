@@ -1,105 +1,105 @@
 version: '3.8'
 
 services:
-  consul:
-    image: consul:1.15.4
-    container_name: consul
-    restart: always
-    networks:
-      app-network:
-    expose:
-      - "8500"
-    volumes:
-      - ./consul/config.json:/consul/config/config.json
-    command: agent -dev -client=0.0.0.0
+  # consul:
+  #   image: consul:1.15.4
+  #   container_name: consul
+  #   restart: always
+  #   networks:
+  #     app-network:
+  #   expose:
+  #     - "8500"
+  #   volumes:
+  #     - ./consul/config.json:/consul/config/config.json
+  #   command: agent -dev -client=0.0.0.0
 
-  cassandra-1:
-    image: "cassandra:latest"
-    container_name: "cassandra-1"
-    networks:
-      cassandra-internal:
-        aliases:
-          - cassandra-seed
-      app-network:
-    expose:
-      - "9042"
-    environment:
-      - CASSANDRA_START_RPC=true
-      - CASSANDRA_RPC_ADDRESS=0.0.0.0
-      - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
-      - CASSANDRA_CLUSTER_NAME=my-cluster
-      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
-      - CASSANDRA_DC=my-datacenter-1
-      - MAX_HEAP_SIZE=2G
-      - HEAP_NEWSIZE=1G
-    volumes:
-      - cassandra-node-1:/var/lib/cassandra:rw
-    restart:
-      on-failure
-    healthcheck:
-      test: ["CMD-SHELL", "nodetool status"]
-      interval: 2m
-      start_period: 2m
-      timeout: 10s
-      retries: 3
+  # cassandra-1:
+  #   image: "cassandra:latest"
+  #   container_name: "cassandra-1"
+  #   networks:
+  #     cassandra-internal:
+  #       aliases:
+  #         - cassandra-seed
+  #     app-network:
+  #   expose:
+  #     - "9042"
+  #   environment:
+  #     - CASSANDRA_START_RPC=true
+  #     - CASSANDRA_RPC_ADDRESS=0.0.0.0
+  #     - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
+  #     - CASSANDRA_CLUSTER_NAME=my-cluster
+  #     - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
+  #     - CASSANDRA_DC=my-datacenter-1
+  #     - MAX_HEAP_SIZE=2G
+  #     - HEAP_NEWSIZE=1G
+  #   volumes:
+  #     - cassandra-node-1:/var/lib/cassandra:rw
+  #   restart:
+  #     on-failure
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "nodetool status"]
+  #     interval: 2m
+  #     start_period: 2m
+  #     timeout: 10s
+  #     retries: 3
 
-  cassandra-2:
-    image: "cassandra:latest"
-    container_name: "cassandra-2"
-    networks:
-      - cassandra-internal
-    environment:
-      - CASSANDRA_START_RPC=true
-      - CASSANDRA_RPC_ADDRESS=0.0.0.0
-      - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
-      - CASSANDRA_CLUSTER_NAME=my-cluster
-      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
-      - CASSANDRA_DC=my-datacenter-1
-      - CASSANDRA_SEEDS=cassandra-1
-      - MAX_HEAP_SIZE=2G
-      - HEAP_NEWSIZE=1G
-    depends_on:
-      cassandra-1:
-        condition: service_healthy
-    volumes:
-      - cassandra-node-2:/var/lib/cassandra:rw
-    restart:
-      on-failure
-    healthcheck:
-      test: ["CMD-SHELL", "nodetool status"]
-      interval: 2m
-      start_period: 2m
-      timeout: 10s
-      retries: 3
+  # cassandra-2:
+  #   image: "cassandra:latest"
+  #   container_name: "cassandra-2"
+  #   networks:
+  #     - cassandra-internal
+  #   environment:
+  #     - CASSANDRA_START_RPC=true
+  #     - CASSANDRA_RPC_ADDRESS=0.0.0.0
+  #     - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
+  #     - CASSANDRA_CLUSTER_NAME=my-cluster
+  #     - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
+  #     - CASSANDRA_DC=my-datacenter-1
+  #     - CASSANDRA_SEEDS=cassandra-1
+  #     - MAX_HEAP_SIZE=2G
+  #     - HEAP_NEWSIZE=1G
+  #   depends_on:
+  #     cassandra-1:
+  #       condition: service_healthy
+  #   volumes:
+  #     - cassandra-node-2:/var/lib/cassandra:rw
+  #   restart:
+  #     on-failure
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "nodetool status"]
+  #     interval: 2m
+  #     start_period: 2m
+  #     timeout: 10s
+  #     retries: 3
 
-  cassandra-3:
-    image: "cassandra:latest"
-    container_name: "cassandra-3"
-    networks:
-      - cassandra-internal
-    environment:
-      - CASSANDRA_START_RPC=true
-      - CASSANDRA_RPC_ADDRESS=0.0.0.0
-      - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
-      - CASSANDRA_CLUSTER_NAME=my-cluster
-      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
-      - CASSANDRA_DC=my-datacenter-1
-      - CASSANDRA_SEEDS=cassandra-1
-      - MAX_HEAP_SIZE=2G
-      - HEAP_NEWSIZE=1G
-    depends_on:
-      cassandra-2:
-        condition: service_healthy
-    volumes:
-      - cassandra-node-3:/var/lib/cassandra:rw
-    restart:
-      on-failure
-    healthcheck:
-      test: ["CMD-SHELL", "nodetool status"]
-      interval: 2m
-      start_period: 2m
-      timeout: 10s
-      retries: 3
+  # cassandra-3:
+  #   image: "cassandra:latest"
+  #   container_name: "cassandra-3"
+  #   networks:
+  #     - cassandra-internal
+  #   environment:
+  #     - CASSANDRA_START_RPC=true
+  #     - CASSANDRA_RPC_ADDRESS=0.0.0.0
+  #     - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
+  #     - CASSANDRA_CLUSTER_NAME=my-cluster
+  #     - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
+  #     - CASSANDRA_DC=my-datacenter-1
+  #     - CASSANDRA_SEEDS=cassandra-1
+  #     - MAX_HEAP_SIZE=2G
+  #     - HEAP_NEWSIZE=1G
+  #   depends_on:
+  #     cassandra-2:
+  #       condition: service_healthy
+  #   volumes:
+  #     - cassandra-node-3:/var/lib/cassandra:rw
+  #   restart:
+  #     on-failure
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "nodetool status"]
+  #     interval: 2m
+  #     start_period: 2m
+  #     timeout: 10s
+  #     retries: 3
 
   minio:
     image: minio/minio
@@ -116,17 +116,17 @@ services:
       - minio-data:/data
     command: server /data
 
-  nginx:
-    build: ./nginx
-    container_name: nginx
-    restart: always
-    networks:
-      app-network:
-    ports:
-      - "80:80"
-      - "1935:1935"
-    depends_on:
-      - consul
+  # nginx:
+  #   build: ./nginx
+  #   container_name: nginx
+  #   restart: always
+  #   networks:
+  #     app-network:
+  #   ports:
+  #     - "80:80"
+  #     - "1935:1935"
+  #   depends_on:
+  #     - consul
 
 networks:
   cassandra-internal:
