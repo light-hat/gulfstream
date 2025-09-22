@@ -6,6 +6,8 @@ COPY go.mod go.sum ./
 
 RUN go mod download
 
+RUN go get github.com/notedit/rtmp
+
 COPY . .
 
 RUN go build -o /rtmp-ingest
