@@ -6,7 +6,7 @@ ENV NGINX_RTMP_MODULE_VERSION 1.2.2
 
 # Установка зависимостей
 RUN apt-get update && \
-    apt-get install -y ca-certificates openssl libssl-dev git ffmpeg && \
+    apt-get install -y ca-certificates openssl libssl-dev git && \
     rm -rf /var/lib/apt/lists/*
 
 # Создаем пользователя и группу nginx
@@ -20,11 +20,11 @@ RUN mkdir -p /tmp/build/nginx && \
     tar -zxf ${NGINX_VERSION}.tar.gz
 
 # Скачиваем и распаковываем RTMP-модуль
-RUN mkdir -p /tmp/build/nginx-rtmp-module && \
-    cd /tmp/build/nginx-rtmp-module && \
-    wget -O nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    tar -zxf nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    cd nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}
+# RUN mkdir -p /tmp/build/nginx-rtmp-module && \
+#     cd /tmp/build/nginx-rtmp-module && \
+#     wget -O nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
+#     tar -zxf nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
+#     cd nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}
 
 # Клонируем репозиторий upsync модуля (для коннекта с Consul)
 RUN git clone https://github.com/weibocom/nginx-upsync-module.git /tmp/build/nginx-upsync-module
@@ -43,7 +43,6 @@ RUN cd /tmp/build/nginx/${NGINX_VERSION} && \
         --with-threads \
         --with-ipv6 \
         --add-dynamic-module=/tmp/build/nginx-upsync-module \
-        --add-module=/tmp/build/nginx-rtmp-module/nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION} \
         --with-debug && \
     make -j $(getconf _NPROCESSORS_ONLN) && \
     make install && \
@@ -66,8 +65,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN chown nginx:nginx /etc/nginx/nginx.conf
 
 # Создаем директорию для HLS
-RUN mkdir -p /var/www/hls && chmod -R 755 /var/www/hls
-RUN chown nginx:nginx /var/www/hls
+# RUN mkdir -p /var/www/hls && chmod -R 755 /var/www/hls
+# RUN chown nginx:nginx /var/www/hls
 
 EXPOSE 80 1935
 
