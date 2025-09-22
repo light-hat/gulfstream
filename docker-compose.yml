@@ -1,15 +1,93 @@
 version: '3.8'
 
 services:
-  consul:
-    image: consul:1.15.4
-    container_name: consul
-    restart: always
-    expose:
-      - 8500
+  # consul:
+  #   image: consul:1.15.4
+  #   container_name: consul
+  #   restart: always
+  #   expose:
+  #     - 8500
+  #   volumes:
+  #     - ./consul/config.json:/consul/config/config.json
+  #   command: agent -dev -client=0.0.0.0
+
+  cassandra-1:
+    image: "cassandra:latest"
+    container_name: "cassandra-1"
+    ports:
+      - 7000:7000
+      - 9042:9042
+    environment:
+      - CASSANDRA_START_RPC=true
+      - CASSANDRA_RPC_ADDRESS=0.0.0.0
+      - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
+      - CASSANDRA_CLUSTER_NAME=my-cluster
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DC=my-datacenter-1
     volumes:
-      - ./consul/config.json:/consul/config/config.json
-    command: agent -dev -client=0.0.0.0
+      - cassandra-node-1:/var/lib/cassandra:rw
+    restart:
+      on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status"]
+      interval: 2m
+      start_period: 2m
+      timeout: 10s
+      retries: 3
+
+  cassandra-2:
+    image: "cassandra:latest"
+    container_name: "cassandra-2"
+    ports:
+      - 9043:9042
+    environment:
+      - CASSANDRA_START_RPC=true
+      - CASSANDRA_RPC_ADDRESS=0.0.0.0
+      - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
+      - CASSANDRA_CLUSTER_NAME=my-cluster
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DC=my-datacenter-1
+      - CASSANDRA_SEEDS=cassandra-1
+    depends_on:
+      cassandra-1:
+        condition: service_healthy
+    volumes:
+      - cassandra-node-2:/var/lib/cassandra:rw
+    restart:
+      on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status"]
+      interval: 2m
+      start_period: 2m
+      timeout: 10s
+      retries: 3
+
+  cassandra-3:
+    image: "cassandra:latest"
+    container_name: "cassandra-3"
+    ports:
+      - 9044:9042
+    environment:
+      - CASSANDRA_START_RPC=true
+      - CASSANDRA_RPC_ADDRESS=0.0.0.0
+      - CASSANDRA_LISTEN_ADDRESS=auto  # default, use IP addr of container # = CASSANDRA_BROADCAST_ADDRESS
+      - CASSANDRA_CLUSTER_NAME=my-cluster
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DC=my-datacenter-1
+      - CASSANDRA_SEEDS=cassandra-1
+    depends_on:
+      cassandra-2:
+        condition: service_healthy
+    volumes:
+      - cassandra-node-3:/var/lib/cassandra:rw
+    restart:
+      on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status"]
+      interval: 2m
+      start_period: 2m
+      timeout: 10s
+      retries: 3
 
   minio:
     image: minio/minio
@@ -34,4 +112,7 @@ services:
       - consul
 
 volumes:
+  cassandra-node-1:
+  cassandra-node-2:
+  cassandra-node-3:
   minio-data:
